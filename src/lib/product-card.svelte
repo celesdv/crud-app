@@ -2,18 +2,18 @@
   export let product;
 </script>
 
-<div class="col-md-6">
-  {#if !product.image}
+<div class="col-md-4">
+  {#if !product.imageURL}
     <img
       src="https://www.adesso.com/wp-content/uploads/2018/04/no_products_found.png"
       alt="not found"
       class="img-fluid m-2"
     />
   {:else}
-    <img src={product.image} alt="product" class="img-fluid m-2" />
+    <img src={product.imageURL} alt="product" class="img-fluid m-2 rounded" />
   {/if}
 </div>
-<div class="col-md-6">
+<div class="col-md-8">
   <div class="card-body">
     <h5>
       <strong>

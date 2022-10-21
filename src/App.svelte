@@ -1,10 +1,14 @@
 <script>
   import ProductCard from "./lib/product-card.svelte";
   import { v4 as uuidv4 } from "uuid";
+  import Noty from "noty";
+  import "noty/lib/noty.css";
 
   let products = [];
+  let editStatus = false;
 
   let product = {
+    id: "",
     name: "",
     description: "",
     category: "",
@@ -13,6 +17,7 @@
 
   const cleanProduct = () => {
     product = {
+      id: "",
       name: "",
       description: "",
       category: "",
@@ -22,22 +27,62 @@
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
+    if (editStatus) {
+      updateProduct();
+    } else {
+      addProduct();
+    }
+  };
+
+  const deleteProduct = (id) => {
+    products = products.filter((product) => product.id !== id);
+  };
+
+  const editProduct = (productUpdated) => {
+    editStatus = true;
+    product = productUpdated;
+  };
+
+  const cancelEdit = () => {
+    editStatus = false;
+    cleanProduct();
+  };
+
+  const addProduct = () => {
     const newProduct = {
       id: uuidv4(),
       name: product.name,
       description: product.description,
       category: product.category,
-      image: product.imageURL,
+      imageURL: product.imageURL,
     };
 
     products = products.concat(newProduct);
     cleanProduct();
 
     console.log(products);
+    new Noty({
+      theme: "sunset",
+      type: 'success',
+      text: "Product added successfuly",
+      timeout: 3000,
+    }).show();
   };
 
-  const deleteProduct = (id) => {
-    console.log(id);
+  const updateProduct = () => {
+    let updatedProduct = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      category: product.category,
+      imageURL: product.imageURL,
+    };
+
+    const index = products.findIndex((p) => p.id === product.id);
+    products[index] = updatedProduct;
+
+    editStatus = false;
+    cleanProduct();
   };
 </script>
 
@@ -54,7 +99,10 @@
                   class="btn btn-danger m-2"
                   on:click={deleteProduct(product.id)}>Delete</button
                 >
-                <button class="btn btn-secondary m-2">Edit</button>
+                <button
+                  class="btn btn-secondary m-2"
+                  on:click={editProduct(product)}>Edit</button
+                >
               </div>
             </div>
           </div>
@@ -103,7 +151,14 @@
                 </select>
               </div>
 
-              <button class="btn btn-success">Save Product</button>
+              {#if editStatus}
+                <button class="btn btn-secondary">Edit Product</button>
+                <button class="btn btn-danger" on:click={cancelEdit}
+                  >Cancel Edit</button
+                >
+              {:else}
+                <button class="btn btn-success">Save Product</button>
+              {/if}
             </form>
           </div>
         </div>
